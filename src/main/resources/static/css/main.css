@@ -1,0 +1,23 @@
+
+
+h2{
+	color:#FF0000;
+}
+
+footer{
+    margin-top:60px;
+}
+
+
+.buttonGreen {
+    background-color: white;
+    color: black;
+    border: 2px solid #0698f9;
+    border-radius: 0px;
+    margin: 0;
+}
+
+.buttonGreen:hover {
+    background-color: #0698f9;
+    color: white;
+}
