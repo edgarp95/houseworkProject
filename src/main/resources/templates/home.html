@@ -5,13 +5,25 @@
     <title>Homeworks pealeht</title>
     <script type="text/javascript" src="webjars/jquery/3.2.1/dist/jquery.min.js"></script>
     <link rel="stylesheet" th:href="@{/css/main.css}" href="../../static/css/main.css"/>
-	
+	<script th:src="@{/js/app.js}"></script>
     <div th:replace="fragments/header :: header-css"/>
 
 </head>
 <body>
 
 <div th:replace="fragments/header :: header"/>
+<div th:if="${nameError != null}"  class="alert alert-danger" th:text="#{dashboard.nameError}">
+     Error
+</div>
+<div th:if="${houseworkError != null}"  class="alert alert-danger" th:text="#{dashboard.houseworkError}">
+     Error
+</div>
+<div th:if="${nameSuccess != null}"  class="alert alert-success" th:text="#{dashboard.nameSuccess}">
+     Success
+</div>
+<div th:if="${houseworkSuccess != null}"  class="alert alert-success" th:text="#{dashboard.houseworkSuccess}">
+     Success
+</div>
 
 <div class="container">
 
@@ -27,6 +39,8 @@
 	                    <th th:text="#{person_details.points}">Points</th>
 	                    <th th:text="#{person_details.add}">Add homework</th>
 	                    <th th:text="#{person_details.reduce}">Add gaming hours</th>
+	                    <th th:text="#{person_details.delete}">Delete user</th>
+	                    <th th:text="#{person_details.history}">History</th>
                 	</tr>
 
 
@@ -37,14 +51,24 @@
                     <td th:text="${person.getName()}">name</td>
                     <td th:text="${person.getPoints()}">points</td>
                     <td>
-                           <button type="submit"  class="buttonGreen"
-                                   th:text="#{person_details.add}">Add
+                           <button type="submit"  class="buttonBlue"
+                                   ><span class="glyphicon glyphicon-plus"></span>Lisa tehtud kodutööd 
                            </button>
                     </td>
                      <td>
-                            <button type="submit"  class="buttonGreen"
-                                    th:text="#{person_details.reduce}">Add
+                            <button type="submit"  class="buttonBlue"><span class="glyphicon glyphicon-minus"></span>Lahuta mängitud aega
                             </button>
+                    </td>
+                    <td>
+                    	<button type="button" class="btn btn-default btn-sm" data-toggle="modal" 
+                        data-target="#personDelete" th:onclick="'deletePerson(' + ${person.getId()} + ')'">
+          					<span class="glyphicon glyphicon-trash"></span> Kustuta 
+       					 </button>
+                    </td>
+                    <td>
+                    	<button type="button" class="btn btn-default btn-sm">
+          					<span class="glyphicon glyphicon-floppy-disk"></span>Ajalugu 
+       					 </button>
                     </td>
                 </tr>
 
@@ -54,7 +78,7 @@
     </div>
       <div class="row" align="center">
          <div class="col-xs-3 col-sm-3 col-md-3" align="center">
-             <input  type="submit" class="btn btn-lg btn-primary btn-block" value="Lisa kasutaja"/>
+             <input  type="submit" class="btn btn-lg btn-primary btn-block" value="Lisa kasutaja" data-toggle="modal" data-target="#nameModal"/>
          </div>
         
      </div>
@@ -71,7 +95,7 @@
 	                    <th th:text="#{housework_details.points}">Points</th>
 	                   	<th th:text="#{housework_details.change}">Change</th>
 	                   	<th th:text="#{housework_details.delete}">Delete</th>
-	
+						
                 	</tr>
 
 
@@ -83,14 +107,14 @@
                     <td th:text="${houseworks.getPoints()}">points</td>
                     
                     <td>
-					 	<button type="submit"  class="buttonGreen"
-                              th:text="#{housework_details.change}">Change
+					 	<button type="submit"  class="buttonBlue"><span class="glyphicon glyphicon-pencil"></span>Muuda kodutööd
                          </button>
                     </td>
                     <td>
-					 	<button type="submit"  class="buttonGreen"
-                              th:text="#{housework_details.delete}">Delete
-                         </button>
+                    	<button type="button" class="btn btn-default btn-sm" data-toggle="modal" 
+                        	data-target="#houseworkDelete" th:onclick="'deleteHousework(' + ${houseworks.getId()} + ')'">
+          					<span class="glyphicon glyphicon-trash"></span> Kustuta 
+       					 </button>
                     </td>
                 </tr>
 
@@ -100,7 +124,7 @@
     </div>
     <div class="row" align="center">
          <div class="col-xs-3 col-sm-3 col-md-3" align="center">
-             <input  type="submit" class="btn btn-lg btn-primary btn-block" value="Lisa kodutöid"/>
+             <input  type="submit" class="btn btn-lg btn-primary btn-block" value="Lisa kodutöid" data-toggle="modal" data-target="#houseworkmodal" />
          </div>
         
      </div>
@@ -110,6 +134,131 @@
     </div>
 
 </div>
+
+<!-- Add person modal -->
+<div class="modal fade" id="nameModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">Lisa uus kasutaja süsteemi</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form th:action="@{/createperson}" method="post" th:object="${person}">
+            <div class="modal-body mx-3">
+            	
+	                <div class="md-form mb-5">
+	                	<label data-error="wrong" data-success="right" for="form34">Sisesta kasutaja nimi</label>
+	                    <i class="fa fa-user prefix grey-text"></i>
+	                    <input type="text" id="form34" class="form-control validate" th:required="required" th:field="*{name}"/>
+	                  
+	                    
+	                </div>
+	
+	                <div class="md-form mb-5">
+	                	<label data-error="wrong" data-success="right" for="form29">Sisesta punktide arv</label>
+	                    <i class="fa fa-envelope prefix grey-text"></i>
+	                    <input type="number" id="form29" class="form-control validate" min="0" th:required="required" th:field="*{points}"/>
+	                    
+	                </div>
+
+	            
+
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary">Loo uus kasutaja <i class="fa fa-paper-plane-o ml-1"></i></button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Person delete modal -->
+<div class="modal" tabindex="-1" role="dialog" id="personDelete">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Kustutamise kinnitamine</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Kas oled kindel, et tahad kasutajat kustutada?</p>
+      </div>
+      <div class="modal-footer">
+      	<a id="deletepersonUrl">
+       		<button type="button" class="btn btn-primary">Kustuta</button>
+       		</a>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Loobu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Houswork add modal -->
+<div class="modal fade" id="houseworkmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">Lisa uus kodutöö süsteemi</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form th:action="@{/createhousework}" method="post" th:object="${housework}">
+            <div class="modal-body mx-3">
+            	
+	                <div class="md-form mb-5">
+	                	<label data-error="wrong" data-success="right" for="form34">Sisesta kodutöö nimetus</label>
+	                    <i class="fa fa-user prefix grey-text"></i>
+	                    <input type="text" id="form34" class="form-control validate" th:required="required" th:field="*{name}"/>
+	                  
+	                    
+	                </div>
+	
+	                <div class="md-form mb-5">
+	                	<label data-error="wrong" data-success="right" for="form29">Sisesta kodutöö punktide arv</label>
+	                    <i class="fa fa-envelope prefix grey-text"></i>
+	                    <input type="number" id="form29" class="form-control validate" min="0" th:required="required" th:field="*{points}"/>
+	                </div>
+
+	            
+
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary">Loo uus kodutöö <i class="fa fa-paper-plane-o ml-1"></i></button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Person delete modal -->
+<div class="modal" tabindex="-1" role="dialog" id="houseworkDelete">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Kustutamise kinnitamine</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Kas oled kindel, et tahad kodutööd kustutada?</p>
+      </div>
+      <div class="modal-footer">
+      	<a id="deletehouseworkUrl">
+       		<button type="button" class="btn btn-primary">Kustuta</button>
+       		</a>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Loobu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- /.container -->
 
 <div th:replace="fragments/footer :: footer"/>

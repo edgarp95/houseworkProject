@@ -9,5 +9,7 @@ import com.housework.housework.Housework;
 public interface HouseworkRepository extends CrudRepository<Housework, Long>{
 	
 	List<Housework> findAllByOrderByNameAsc();
+	
+	List<Housework> findByid(int id);
 
 }

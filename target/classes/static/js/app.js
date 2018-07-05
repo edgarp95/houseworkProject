@@ -1,9 +1,9 @@
-function validate() {
-	var name = document.getElementById("name").value;
-	if (name == '') {
-		alert('Please enter a valid name.');
-		return false;
-	} else {
-		return true;
-	}
+function deletePerson(index) {
+	var a = document.getElementById("deletepersonUrl");
+	a.href = "/deleteperson/"+index
+}
+
+function deleteHousework(index) {
+	var a = document.getElementById("deletehouseworkUrl");
+	a.href = "/deletehousework/"+index
 }

@@ -23,8 +23,6 @@ public class Housework {
 	private String name;
 	
 	@Column(name = "points")
-    @NotNull
-    @NotBlank
 	private int points;
 	public int getId() {
 		return id;

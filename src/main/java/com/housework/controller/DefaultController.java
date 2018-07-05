@@ -2,10 +2,21 @@ package com.housework.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.housework.housework.Housework;
 import com.housework.person.Person;
@@ -14,7 +25,7 @@ import com.housework.repository.PersonRepository;
 
 @Controller
 public class DefaultController {
-
+	List<Person> personrepositoryObject;
 	@Autowired
 	PersonRepository personrepository;
 	
@@ -28,9 +39,59 @@ public class DefaultController {
     	List<Housework> houseworks = this.houseworkrepository.findAllByOrderByNameAsc();
     	homeView.addObject("persons", personrepositoryObject);
     	homeView.addObject("houseworks", houseworks);
+    	homeView.addObject("person", new Person());
+    	homeView.addObject("housework", new Housework());
         return homeView;
     }
-
+    
+    @RequestMapping(value = "createperson", method = RequestMethod.POST)
+    public String  createPerson(@Valid Person prsn, BindingResult bindingresult, RedirectAttributes attributes) {
+    	if (bindingresult.hasErrors()) {
+    		attributes.addFlashAttribute("nameError", "nameError");
+    		return "redirect:/";
+    	}
+    		
+    	
+    	else {
+    		personrepository.save(prsn);
+    		attributes.addFlashAttribute("nameSuccess", "nameSuccess");
+    		return "redirect:/";
+    	}
+    	
+    }
+    
+    @RequestMapping(value = "createhousework", method = RequestMethod.POST)
+    public String  createHousework(@Valid Housework housework, BindingResult bindingresult, RedirectAttributes attributes) {
+    	if (bindingresult.hasErrors()) {
+    		attributes.addFlashAttribute("houseworkError", "houseworkError");
+    		return "redirect:/";
+    	}
+    		
+    	
+    	else {
+    		houseworkrepository.save(housework);
+    		attributes.addFlashAttribute("houseworkSuccess", "houseworkSuccess");
+    		return "redirect:/";
+    	}
+    	
+    }
+    
+    
+    @RequestMapping(value ="deleteperson/{id}", method = RequestMethod.GET)
+    public String deletePerson(@PathVariable("id") int id, RedirectAttributes redirectAttributes) {
+    	personrepository.delete(personrepository.findByid(id));
+    	return "redirect:/";
+    }
+    
+    @RequestMapping(value ="deletehousework/{id}", method = RequestMethod.GET)
+    public String deleteHousework(@PathVariable("id") int id, RedirectAttributes redirectAttributes) {
+    	houseworkrepository.delete(houseworkrepository.findByid(id));
+    	return "redirect:/";
+    }
+    
+    /*
+     * Kasutu jama!
+     */
     @GetMapping("/home")
     public String home() {
         return "/home";

@@ -9,5 +9,6 @@ import com.housework.person.Person;
 public interface PersonRepository extends CrudRepository<Person, Long>{
 	
 	List<Person> findAllByOrderByNameAsc();
-
+	
+	List<Person> findByid(int id);
 }
