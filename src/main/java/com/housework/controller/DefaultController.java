@@ -5,26 +5,36 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
+import com.housework.error.MyAccessDeniedHandler;
 import com.housework.housework.Housework;
+import com.housework.housework.HouseworkSelect;
 import com.housework.person.Person;
 import com.housework.repository.HouseworkRepository;
 import com.housework.repository.PersonRepository;
 
 @Controller
 public class DefaultController {
+	private static Logger log = LoggerFactory.getLogger(DefaultController.class);
+	
 	List<Person> personrepositoryObject;
 	@Autowired
 	PersonRepository personrepository;
@@ -34,6 +44,7 @@ public class DefaultController {
 	
     @GetMapping("/")
     public ModelAndView home1() {
+    	log.info("OLEN!");
     	ModelAndView homeView = new ModelAndView("/home");
     	List<Person> personrepositoryObject = this.personrepository.findAllByOrderByNameAsc();
     	List<Housework> houseworks = this.houseworkrepository.findAllByOrderByNameAsc();
@@ -41,6 +52,7 @@ public class DefaultController {
     	homeView.addObject("houseworks", houseworks);
     	homeView.addObject("person", new Person());
     	homeView.addObject("housework", new Housework());
+    	homeView.addObject("houseworkSelect", new HouseworkSelect());
         return homeView;
     }
     
@@ -89,6 +101,54 @@ public class DefaultController {
     	return "redirect:/";
     }
     
+    @RequestMapping(value ="/personAddHousework", method = RequestMethod.POST)
+    public String personAddHousework(@Valid HouseworkSelect select, BindingResult bindingresult, RedirectAttributes attributes) {
+    	if (bindingresult.hasErrors()) {
+    		attributes.addFlashAttribute("personhouseworkError", "personhouseworkError");
+    		return "redirect:/";
+    	}
+    	
+    	// TODO: Error handling
+    	try {
+	    	Person person = personrepository.findByid(select.getId()).get(0);
+	    	int sum = person.getPoints();
+	    	for (int i : select.getSelect()) {
+	    		// TODO: Add to history
+	    		Housework work = houseworkrepository.findByid(i).get(0);
+	    		sum += work.getPoints();
+	    	}
+	    	person.setPoints(sum);
+	    	personrepository.save(person);
+    	} catch (Error e) {
+    		log.info("Läks katki");
+    		attributes.addFlashAttribute("personhouseworkError", "personhouseworkError");
+    		return "redirect:/";
+    	}
+    	
+    	attributes.addFlashAttribute("personhouseworkSuccess", "personhouseworkSuccess");
+    	return "redirect:/";
+    }
+    
+    @RequestMapping(value ="/reducepersonhousework/{id}", method = RequestMethod.POST)
+    public  String reducePersonHousework(@PathVariable("id") int id, @RequestBody int points, RedirectAttributes attributes) {
+    	log.info("PALUN VAATA");
+    	log.info("ID: "+points);
+    	Person person = personrepository.findByid(id).get(0);
+    	
+    	if (person.getPoints()-points < 0) {
+    		//TODO: Error handling
+    		log.info("ERROR");
+    		return "redirect:/";
+    	}
+    	else {
+    		person.setPoints(person.getPoints()-points);
+    		personrepository.save(person);
+    		attributes.addFlashAttribute("personAddPlayinghoursSuccess", "personAddPlayinghoursSuccess");
+        	return "redirect:/";
+    	}
+    	
+    }
+   
     /*
      * Kasutu jama!
      */

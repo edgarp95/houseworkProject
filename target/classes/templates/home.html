@@ -18,15 +18,23 @@
 <div th:if="${houseworkError != null}"  class="alert alert-danger" th:text="#{dashboard.houseworkError}">
      Error
 </div>
+<div th:if="${personhouseworkError != null}"  class="alert alert-danger" th:text="#{dashboard.personhouseworkError}">
+     Error
+</div>
 <div th:if="${nameSuccess != null}"  class="alert alert-success" th:text="#{dashboard.nameSuccess}">
      Success
 </div>
 <div th:if="${houseworkSuccess != null}"  class="alert alert-success" th:text="#{dashboard.houseworkSuccess}">
      Success
 </div>
+<div th:if="${houseworkSuccess != personhouseworkSuccess}"  class="alert alert-success" th:text="#{dashboard.personhouseworkSuccess}">
+     Success
+</div>
+<div th:if="${houseworkSuccess != personAddPlayinghoursSuccess}"  class="alert alert-success" th:text="#{dashboard.personAddPlayinghoursSuccess}">
+     Success
+</div>
 
 <div class="container">
-
     <div class="starter-template">
         <h1>Kodutöö tegijad</h1>
         <div class="table-responsive">
@@ -51,14 +59,17 @@
                     <td th:text="${person.getName()}">name</td>
                     <td th:text="${person.getPoints()}">points</td>
                     <td>
-                           <button type="submit"  class="buttonBlue"
-                                   ><span class="glyphicon glyphicon-plus"></span>Lisa tehtud kodutööd 
+                           <button type="submit"  class="buttonBlue" data-toggle="modal" 
+                        data-target="#personAddHousework"  th:onclick="'submitHouseworkPersonPre(' + ${person.getId()} + ')'"
+                                   ><span class="glyphicon glyphicon-plus" ></span>Lisa tehtud kodutööd 
                            </button>
                     </td>
                      <td>
-                            <button type="submit"  class="buttonBlue"><span class="glyphicon glyphicon-minus"></span>Lahuta mängitud aega
+                            <button type="submit"  class="buttonBlue" data-toggle="modal" 
+                        data-target="#addPlayinghours" th:onclick="'addPlayingHoursPre(' + ${person.getId()} + ')'"><span class="glyphicon glyphicon-minus"></span>Lahuta mängitud aega
                             </button>
                     </td>
+                    
                     <td>
                     	<button type="button" class="btn btn-default btn-sm" data-toggle="modal" 
                         data-target="#personDelete" th:onclick="'deletePerson(' + ${person.getId()} + ')'">
@@ -259,6 +270,73 @@
   </div>
 </div>
 
+
+<!-- Person add housework modal -->
+<div class="modal" tabindex="-1" role="dialog" id="personAddHousework">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Tehtud kodutööde lisamine</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Vali tehtud kodutööd, mitme kodutöö valimiseks hoia all "Ctrl" nuppu</p>
+      </div>
+      <form id="idForm" th:action="@{/personAddHousework}" th:object="${houseworkSelect}" method="post">
+        <div class="modal-body mx-3">
+            	 
+	                <div class="md-form mb-5">
+	                	<label data-error="wrong" data-success="right" for="form34">Vali tehtud kodutööd</label>
+	                    <select class="form-control validate" name="multiple" multiple="multiple" id="test"  th:field="*{select}" th:required="required">
+						        <option th:each="houseworks : ${houseworks}" 
+				                th:value="${houseworks.id}" 
+				                th:text="${houseworks.name}"></option>
+
+  						</select>
+  						<input type="hidden" id="personAddHouseworkId" th:field="*{id}" th:required="required"/>               
+	                </div>
+            </div>
+      
+
+      <div class="modal-footer">
+       		<button type="submit" class="btn btn-primary">Lisa</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Loobu</button>
+      </div>
+      </form>	
+    </div>
+  </div>
+</div>
+
+
+<!-- Person add playing time modal -->
+<div class="modal" tabindex="-1" role="dialog" id="addPlayinghours">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Kustutamise kinnitamine</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form name="playinghours"  onsubmit="addPlayingHours()">
+      <div class="modal-body">
+      
+      	<label data-error="wrong" data-success="right" for="form34">Mitu minutit kasutaja mängis?</label>
+        <i class="fa fa-envelope prefix grey-text"></i>
+	    <input type="number" id="addPlayinghours" class="form-control validate" min="1"/>
+	    <input type="hidden" id="personaddPlayinghours" th:required="required"/> 
+      </div>
+      <div class="modal-footer">
+
+       	<button id="submitPlayingHours" type="submit" class="btn btn-primary">Kinnita</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Loobu</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
 <!-- /.container -->
 
 <div th:replace="fragments/footer :: footer"/>
