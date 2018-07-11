@@ -129,25 +129,39 @@ public class DefaultController {
     	return "redirect:/";
     }
     
-    @RequestMapping(value ="/reducepersonhousework/{id}", method = RequestMethod.POST)
-    public  String reducePersonHousework(@PathVariable("id") int id, @RequestBody int points, RedirectAttributes attributes) {
+    @RequestMapping(value ="/reducepersonhousework/{id}", method = RequestMethod.POST, produces="application/json")
+    public @ResponseBody  Person reducePersonHousework(@PathVariable("id") int id, @RequestBody int points, RedirectAttributes attributes) {
     	log.info("PALUN VAATA");
     	log.info("ID: "+points);
     	Person person = personrepository.findByid(id).get(0);
     	
-    	if (person.getPoints()-points < 0) {
-    		//TODO: Error handling
-    		log.info("ERROR");
-    		return "redirect:/";
-    	}
-    	else {
-    		person.setPoints(person.getPoints()-points);
-    		personrepository.save(person);
-    		attributes.addFlashAttribute("personAddPlayinghoursSuccess", "personAddPlayinghoursSuccess");
-        	return "redirect:/";
-    	}
+    	
+    	
+    	person.setPoints(person.getPoints()-points);
+    	personrepository.save(person);
+    	
+        return person;
+    	
     	
     }
+    
+	@RequestMapping(value="getperson/{id}", method=RequestMethod.GET, produces="application/json")
+	public @ResponseBody Person getPerson(@PathVariable("id") int id, RedirectAttributes attributes) {
+		Person person = personrepository.findByid(id).get(0);
+		log.info("TESTMEETOD");
+		log.info(person.getName());
+
+			return person;
+	}
+	
+	@RequestMapping(value="changehousework/{id}", method=RequestMethod.POST, produces="application/json")
+	public @ResponseBody Housework changeHousework(@PathVariable("id") int id, @RequestBody int points, RedirectAttributes attributes) {
+		Housework housework = houseworkrepository.findByid(id).get(0);
+		housework.setPoints(points);
+		houseworkrepository.save(housework);
+
+		return housework;
+	}
    
     /*
      * Kasutu jama!
