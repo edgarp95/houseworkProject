@@ -1,5 +1,7 @@
 package com.housework.controller;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,9 +27,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.housework.error.MyAccessDeniedHandler;
+import com.housework.history.History;
 import com.housework.housework.Housework;
 import com.housework.housework.HouseworkSelect;
 import com.housework.person.Person;
+import com.housework.repository.HistoryRepository;
 import com.housework.repository.HouseworkRepository;
 import com.housework.repository.PersonRepository;
 
@@ -41,6 +45,11 @@ public class DefaultController {
 	
 	@Autowired
 	HouseworkRepository houseworkrepository;
+	
+	@Autowired
+	HistoryRepository historyrepository;
+	
+	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy");
 	
     @GetMapping("/")
     public ModelAndView home1() {
@@ -113,8 +122,15 @@ public class DefaultController {
 	    	Person person = personrepository.findByid(select.getId()).get(0);
 	    	int sum = person.getPoints();
 	    	for (int i : select.getSelect()) {
-	    		// TODO: Add to history
+	    		
 	    		Housework work = houseworkrepository.findByid(i).get(0);
+	    		History history = new History();
+	        	history.setDate(LocalDateTime.now().format(formatter));
+	        	history.setName(work.getName());
+	        	history.setPersonId(person.getId());
+	        	history.setType("Kodutoo");
+	        	history.setPoints(work.getPoints());
+	        	historyrepository.save(history);
 	    		sum += work.getPoints();
 	    	}
 	    	person.setPoints(sum);
@@ -134,7 +150,14 @@ public class DefaultController {
     	log.info("PALUN VAATA");
     	log.info("ID: "+points);
     	Person person = personrepository.findByid(id).get(0);
+    	History history = new History();
+    	history.setDate(LocalDateTime.now().format(formatter));
+    	history.setName("M2ngimine");
+    	history.setPersonId(id);
+    	history.setType("M2ng");
+    	history.setPoints(points);
     	
+    	historyrepository.save(history);
     	
     	
     	person.setPoints(person.getPoints()-points);
@@ -161,6 +184,13 @@ public class DefaultController {
 		houseworkrepository.save(housework);
 
 		return housework;
+	}
+	
+	@RequestMapping(value="history/{id}", method=RequestMethod.GET, produces="application/json")
+	public @ResponseBody List<History> getHistory(@PathVariable("id") int id, RedirectAttributes attributes) {
+		List<History> personHistory = historyrepository.findBypersonId(id);
+		
+		return personHistory;
 	}
    
     /*

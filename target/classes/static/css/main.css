@@ -27,3 +27,8 @@ footer{
     height: 20px;
     display: inline-block;
 }
+
+#historyBody {
+	height: 200px;
+	overflow: auto;
+}

@@ -16,13 +16,15 @@ function submitHouseworkPerson() {
 
 	var form = $("#idForm");
 	form.on("submit", function(e) {
+		//var values = $('#multipleSelect').val();
+		//console.log(values)
 		var url = ""; // the script where you handle the form input.
 		$.ajax({
 			type : "POST",
-			url : $form.attr('action'),
+			url : "/personAddHousework",
 			data : $("#idForm").serialize(), 
 			success : function(data) {
-				alert(data);
+				console.log(data)
 			}
 
 		});
@@ -73,8 +75,6 @@ function addPlayingHours() {
 							contentType : "application/json; charset=utf-8",
 							dataType : "json",
 							success : function(data) {
-								console.log("VASTUS");
-								console.log(data);
 								$('#addPlayinghours').modal('hide')
 								var cell = document.getElementById("person"
 										+ id);
@@ -96,8 +96,6 @@ function addPlayingHours() {
 		$('#addHoursAlert3').show()
 
 	}
-
-	// console.log(submitButtonUrl)
 }
 
 function changeHouseworkPre(id) {
@@ -132,4 +130,42 @@ function changeHousework() {
 		$('#changeHouseworkError').show();
 	}
 	
+}
+
+function personHistory(index) {
+	$.ajax({
+		type : "GET",
+		url : "/history/" + index,
+		contentType : "application/json; charset=utf-8",
+		dataType : "json",
+		success : function(data) {
+			var element = document.getElementById("historyBody");
+			var innerElement ="";
+			var tableBody =$("#historyTable").find('tbody')
+			var tableText = $("#historyTableText")
+			tableBody.empty();
+			tableText.empty();
+			if (!$.trim(data)) {
+				
+				tableText.append("<b>Antud kasutajal pole veel ühtegi tegevust!</b>");
+				
+			}
+			else {
+				tableText.append("<b>Kasutaja tegevused: </b>");
+				
+				$.each(data, function(k,v) {
+		
+					var dataPiece = data[k];
+					
+					
+					tableBody.append("<tr><td>"+dataPiece.id+"</td><td>"+dataPiece.type+"</td><td>"+dataPiece.name+"</td><td>"+dataPiece.points+"</td><td>"+dataPiece.date+"</td></tr>");
+					
+					
+				});
+			}
+			
+
+		}
+
+	});
 }

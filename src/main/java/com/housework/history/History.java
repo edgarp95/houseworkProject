@@ -17,15 +17,21 @@ public class History {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	
+	@Column(name = "type")
+	@NotNull
+	@NotBlank
+	private String type;
+	
 	@Column(name = "name")
 	@NotNull
 	@NotBlank
 	private String name;
 	
-	@Column(name = "personName")
-	@NotNull
-	@NotBlank
-	private String personName;
+	@Column(name = "personId")
+	private int personId;
+	
+	@Column(name = "points")
+	private int points;
 	
 	@Column(name = "date")
 	@NotNull
@@ -43,11 +49,14 @@ public class History {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getPersonName() {
-		return personName;
+	
+	
+	
+	public int getPersonId() {
+		return personId;
 	}
-	public void setPersonName(String personName) {
-		this.personName = personName;
+	public void setPersonId(int personId) {
+		this.personId = personId;
 	}
 	public String getDate() {
 		return date;
@@ -55,9 +64,35 @@ public class History {
 	public void setDate(String date) {
 		this.date = date;
 	}
+	
+	
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
 	public History() {
 		super();
 	}
+	public int getPoints() {
+		return points;
+	}
+	public void setPoints(int points) {
+		this.points = points;
+	}
+	public History(int id, String type, String name, int personId, int points, String date) {
+		super();
+		this.id = id;
+		this.type = type;
+		this.name = name;
+		this.personId = personId;
+		this.points = points;
+		this.date = date;
+	}
+	
+	
+	
 	
 	
 

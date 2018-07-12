@@ -90,7 +90,8 @@
        					 </button>
                     </td>
                     <td>
-                    	<button type="button" class="btn btn-default btn-sm">
+                    	<button type="button" class="btn btn-default btn-sm" data-toggle="modal" 
+                        data-target="#personHistory" th:onclick="'personHistory(' + ${person.getId()} + ')'">
           					<span class="glyphicon glyphicon-floppy-disk"></span>Ajalugu 
        					 </button>
                     </td>
@@ -391,6 +392,42 @@
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Loobu</button>
       </div>
       
+    </div>
+  </div>
+</div>
+
+
+<!-- Person history modal -->
+<div class="modal" tabindex="-1" role="dialog" id="personHistory">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Kodutööde ajalugu</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="historyBody">
+      	<p id="historyTableText"></p>
+      	<table class="table table-hover" id="historyTable">
+                <thead>
+                	<tr>
+	                    <th th:text="#{history_details.id}">Id</th>
+	                    <th th:text="#{history_details.type}">Type</th>
+	                    <th th:text="#{history_details.name}">Name</th>
+	                    <th th:text="#{history_details.points}">Points</th>
+	                    <th th:text="#{history_details.date}">Date</th>
+                	</tr>
+
+
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Sulge</button>
+      </div>
     </div>
   </div>
 </div>
