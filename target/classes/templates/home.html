@@ -12,36 +12,34 @@
 <body>
 
 <div th:replace="fragments/header :: header"/>
-<div th:if="${nameError != null}"  class="alert alert-danger alert-dismissible">
-	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+<div th:if="${nameError != null}"  class="alert alert-danger">
 	<p th:text="#{dashboard.nameError}"></p>
 </div>
-<div th:if="${houseworkError != null}"  class="alert alert-danger alert-dismissible">
-	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+<div th:if="${personDeleteSuccess != null}"  class="alert alert-success">
+	<p th:text="#{dashboard.personDeleteSuccess}"></p>
+</div>
+<div th:if="${houseworkDeleteSuccess != null}"  class="alert alert-success">
+	<p th:text="#{dashboard.houseworkDeleteSuccess}"></p>
+</div>
+<div th:if="${houseworkError != null}"  class="alert alert-danger">
 	<p th:text="#{dashboard.houseworkError}"></p>
 </div>
-<div th:if="${personhouseworkError != null}"  class="alert alert-danger alert-dismissible">
-	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+<div th:if="${personhouseworkError != null}"  class="alert alert-danger">
 	<p th:text="#{dashboard.personhouseworkError}"></p>
 </div>
-<div th:if="${nameSuccess != null}"  class="alert alert-success alert-dismissible">
-	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+<div th:if="${nameSuccess != null}"  class="alert alert-success">
 	<p th:text="#{dashboard.nameSuccess}"></p>
 </div>
-<div th:if="${houseworkSuccess != null}"  class="alert alert-success alert-dismissible">
-	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+<div th:if="${houseworkSuccess != null}"  class="alert alert-success">
 	<p th:text="#{dashboard.houseworkSuccess}"></p>
 </div>
-<div th:if="${houseworkSuccess != personhouseworkSuccess}"  class="alert alert-success alert-dismissible" >
-	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+<div th:id="personhouseworkSuccess" class="alert alert-success collapse" >
     <p th:text="#{dashboard.personhouseworkSuccess}"></p>
 </div>
-<div th:id="personAddPlayinghoursSuccess"   class="alert alert-success collapse alert-dismissible">
-	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+<div th:id="personAddPlayinghoursSuccess"   class="alert alert-success collapse">
 	<p  th:text="#{dashboard.personAddPlayinghoursSuccess}"></p>
 </div>
-<div th:id="changeHouseworkSuccess"   class="alert alert-success collapse alert-dismissible">
-	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+<div th:id="changeHouseworkSuccess"   class="alert alert-success collapse">
 	<p  th:text="#{dashboard.changeHouseworkSuccess}"></p>
 </div>
 
@@ -299,27 +297,28 @@
       <div class="modal-body">
         <p>Vali tehtud kodutööd, mitme kodutöö valimiseks hoia all "Ctrl" nuppu</p>
       </div>
-      <form id="idForm" th:action="@{/personAddHousework}" th:object="${houseworkSelect}" method="post">
-        <div class="modal-body mx-3">
-            	 
-	                <div class="md-form mb-5">
-	                	<label data-error="wrong" data-success="right" for="form34">Vali tehtud kodutööd</label>
-	                    <select class="form-control validate" name="multiple" multiple="multiple" id="test"  th:field="*{select}" th:required="required">
-						        <option th:each="houseworks : ${houseworks}" 
-				                th:value="${houseworks.id}" 
-				                th:text="${houseworks.name}"></option>
+        <div class="modal-body">
+           	 	<div th:id="addPersonHouseworkAlert"  class="alert alert-danger collapse">
+		     		<p th:text="#{dashboard.addPersonHouseworkAlert}"></p>
+				</div>
+                <div class="md-form mb-5">
+                	<label data-error="wrong" data-success="right" for="form34">Vali tehtud kodutööd</label>
+                    <select class="form-control validate" name="multiple" multiple="multiple" id="multipleSelect"  th:required="required">
+					        <option th:each="houseworks : ${houseworks}" 
+			                th:value="${houseworks.id}" 
+			                th:text="${houseworks.name}"></option>
 
-  						</select>
-  						<input type="hidden" id="personAddHouseworkId" th:field="*{id}" th:required="required"/>               
-	                </div>
+ 						</select>
+ 						<input type="hidden" id="personAddHouseworkId" th:required="required"/>               
+                </div>
             </div>
       
 
       <div class="modal-footer">
-       		<button type="submit" class="btn btn-primary">Lisa</button>
+       		<button type="button" class="btn btn-primary" onclick="submitHouseworkPerson()">Lisa</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Loobu</button>
       </div>
-      </form>	
+     
     </div>
   </div>
 </div>
@@ -338,15 +337,12 @@
       
       <div class="modal-body">
       	<div th:id="addHoursAlert"  class="alert alert-danger collapse">
-     		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
      		<p th:text="#{dashboard.personAddPlayinghoursError}"></p>
 		</div>
 		<div th:id="addHoursAlert2"  class="alert alert-danger collapse">
-     		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
      		<p th:text="#{dashboard.personAddPlayinghoursError2}"></p>
 		</div>
 		<div th:id="addHoursAlert3"  class="alert alert-danger collapse">
-     		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
      		<p th:text="#{dashboard.personAddPlayinghoursError3}"></p>
 		</div>
       	<label data-error="wrong" data-success="right" for="form34">Mitu minutit kasutaja mängis?</label>

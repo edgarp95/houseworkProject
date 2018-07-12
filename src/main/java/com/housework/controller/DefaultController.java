@@ -99,56 +99,47 @@ public class DefaultController {
     
     
     @RequestMapping(value ="deleteperson/{id}", method = RequestMethod.GET)
-    public String deletePerson(@PathVariable("id") int id, RedirectAttributes redirectAttributes) {
+    public String deletePerson(@PathVariable("id") int id, RedirectAttributes attributes) {
     	personrepository.delete(personrepository.findByid(id));
+    	for (History i : historyrepository.findBypersonId(id)) {
+    		historyrepository.delete(i);
+    	}
+    	attributes.addFlashAttribute("personDeleteSuccess", "personDeleteSuccess");
+    	
     	return "redirect:/";
     }
     
     @RequestMapping(value ="deletehousework/{id}", method = RequestMethod.GET)
-    public String deleteHousework(@PathVariable("id") int id, RedirectAttributes redirectAttributes) {
+    public String deleteHousework(@PathVariable("id") int id, RedirectAttributes attributes) {
     	houseworkrepository.delete(houseworkrepository.findByid(id));
+    	attributes.addFlashAttribute("houseworkDeleteSuccess", "houseworkDeleteSuccess");
     	return "redirect:/";
     }
     
-    @RequestMapping(value ="/personAddHousework", method = RequestMethod.POST)
-    public String personAddHousework(@Valid HouseworkSelect select, BindingResult bindingresult, RedirectAttributes attributes) {
-    	if (bindingresult.hasErrors()) {
-    		attributes.addFlashAttribute("personhouseworkError", "personhouseworkError");
-    		return "redirect:/";
+    @RequestMapping(value ="/personAddHousework/{id}", method = RequestMethod.POST, produces="application/json")
+    public @ResponseBody Person personAddHousework(@PathVariable("id") int id,@RequestParam(value="myArray[]") List<Integer> data, RedirectAttributes attributes) {
+    	Person person = personrepository.findByid(id).get(0);
+    	int sum = person.getPoints();
+    	for (int i : data) {   		
+    		Housework work = houseworkrepository.findByid(i).get(0);
+    		History history = new History();
+        	history.setDate(LocalDateTime.now().format(formatter));
+        	history.setName(work.getName());
+        	history.setPersonId(person.getId());
+        	history.setType("Kodutoo");
+        	history.setPoints(work.getPoints());
+        	historyrepository.save(history);
+    		sum += work.getPoints();
     	}
+    	person.setPoints(sum);
+    	personrepository.save(person);
     	
-    	// TODO: Error handling
-    	try {
-	    	Person person = personrepository.findByid(select.getId()).get(0);
-	    	int sum = person.getPoints();
-	    	for (int i : select.getSelect()) {
-	    		
-	    		Housework work = houseworkrepository.findByid(i).get(0);
-	    		History history = new History();
-	        	history.setDate(LocalDateTime.now().format(formatter));
-	        	history.setName(work.getName());
-	        	history.setPersonId(person.getId());
-	        	history.setType("Kodutoo");
-	        	history.setPoints(work.getPoints());
-	        	historyrepository.save(history);
-	    		sum += work.getPoints();
-	    	}
-	    	person.setPoints(sum);
-	    	personrepository.save(person);
-    	} catch (Error e) {
-    		log.info("Läks katki");
-    		attributes.addFlashAttribute("personhouseworkError", "personhouseworkError");
-    		return "redirect:/";
-    	}
-    	
-    	attributes.addFlashAttribute("personhouseworkSuccess", "personhouseworkSuccess");
-    	return "redirect:/";
+
+    	return person;
     }
     
     @RequestMapping(value ="/reducepersonhousework/{id}", method = RequestMethod.POST, produces="application/json")
     public @ResponseBody  Person reducePersonHousework(@PathVariable("id") int id, @RequestBody int points, RedirectAttributes attributes) {
-    	log.info("PALUN VAATA");
-    	log.info("ID: "+points);
     	Person person = personrepository.findByid(id).get(0);
     	History history = new History();
     	history.setDate(LocalDateTime.now().format(formatter));

@@ -9,29 +9,57 @@ function deleteHousework(index) {
 }
 
 function submitHouseworkPersonPre(index) {
+	$('#addPersonHouseworkAlert').hide();
 	document.getElementById("personAddHouseworkId").value = index;
 }
 
 function submitHouseworkPerson() {
+	$('#addHoursAlert').hide()
+	$('#personAddPlayinghoursSuccess').hide()
+	$('#addHoursAlert').hide()
+	$('#addHoursAlert3').hide()
+	$('#personhouseworkSuccess').hide();
+	$('#addPersonHouseworkAlert').hide();
 
-	var form = $("#idForm");
-	form.on("submit", function(e) {
-		//var values = $('#multipleSelect').val();
-		//console.log(values)
+	var values = $('#multipleSelect').val();
+	var id = $('#personAddHouseworkId').val();
+	console.log(values)
+	if (values.length > 0) { 
+		console.log(id)
+		console.log(values)
 		var url = ""; // the script where you handle the form input.
 		$.ajax({
 			type : "POST",
-			url : "/personAddHousework",
-			data : $("#idForm").serialize(), 
+			url : "/personAddHousework/"+id,
+			data : {
+				myArray : values
+			},
+			dataType : "json", 
 			success : function(data) {
-				console.log(data)
+				if (data === null) {
+					console.log("404 method returned null")
+				}
+				else {
+					console.log(data)
+					var cell = document.getElementById("person"
+											+ id);
+					cell.innerHTML = data.points;
+					$('#personAddHousework').modal('hide');
+					$('#personhouseworkSuccess').show();
+			
+				}
+				
 			}
 
 		});
+	}
+	else {
+		$('#addPersonHouseworkAlert').show()
+		console.log("Nothing chosen!")
+	}
 
-		e.preventDefault(); // avoid to execute the actual submit of the form.
 
-	})
+	
 
 };
 
@@ -40,12 +68,14 @@ function addPlayingHoursPre(index) {
 	$('#personAddPlayinghoursSuccess').hide()
 	$('#addHoursAlert').hide()
 	$('#addHoursAlert3').hide()
+	$('#personhouseworkSuccess').hide();
+	$('#addPersonHouseworkAlert').hide();
 	document.getElementById("personaddPlayinghours").value = index;
 }
 
 function addPlayingHours() {
 	var input = document.getElementById("addPlayinghoursInput").value
-	if (!isNaN(input) && input !== '' && input > -1) {
+	if (!isNaN(input) && input !== '' && input > 0) {
 		var id = document.getElementById("personaddPlayinghours").value;
 		var personPoints;
 		$.ajax({
