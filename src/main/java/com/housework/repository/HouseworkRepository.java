@@ -6,10 +6,10 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.housework.housework.Housework;
 
-public interface HouseworkRepository extends CrudRepository<Housework, Long>{
-	
+public interface HouseworkRepository extends CrudRepository<Housework, Long> {
+
 	List<Housework> findAllByOrderByNameAsc();
-	
+
 	List<Housework> findByid(int id);
 
 }

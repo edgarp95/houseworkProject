@@ -12,6 +12,7 @@
 <body>
 
 <div th:replace="fragments/header :: header"/>
+
 <div th:if="${nameError != null}"  class="alert alert-danger">
 	<p th:text="#{dashboard.nameError}"></p>
 </div>
@@ -70,25 +71,28 @@
                     <td th:text="${person.getName()}">name</td>
                     <td th:id="'person'+${person.getId()}" th:value="${person.getPoints()}" th:text="${person.getPoints()}">points</td>
                     <td>
-                           <button type="submit"  class="buttonBlue" data-toggle="modal" 
+                           <button sec:authorize="hasRole('ROLE_ADMIN')" type="submit"  class="buttonBlue" data-toggle="modal" 
                         data-target="#personAddHousework"  th:onclick="'submitHouseworkPersonPre(' + ${person.getId()} + ')'"
                                    ><span class="glyphicon glyphicon-plus" ></span>Lisa tehtud kodutööd 
                            </button>
+                           <p sec:authorize="hasRole('ROLE_USER')">Sa ei saa lisada kodutöid!</p>
                     </td>
                      <td>
                             <button type="submit"  class="buttonBlue" data-toggle="modal" 
                         			data-target="#addPlayinghours" th:onclick="'addPlayingHoursPre(' + ${person.getId()} + ')'"><span class="glyphicon glyphicon-minus"></span>Lahuta mängitud aega
                             </button>
+       
                     </td>
                     
                     <td>
-                    	<button type="button" class="btn btn-default btn-sm" data-toggle="modal" 
+                    	<button type="button" sec:authorize="hasRole('ROLE_ADMIN')" class="btn btn-default btn-sm" data-toggle="modal" 
                         data-target="#personDelete" th:onclick="'deletePerson(' + ${person.getId()} + ')'">
           					<span class="glyphicon glyphicon-trash"></span> Kustuta 
        					 </button>
+       					 <p sec:authorize="hasRole('ROLE_USER')">Sa ei saa kasutajat kustutada!</p>
                     </td>
                     <td>
-                    	<button type="button" class="btn btn-default btn-sm" data-toggle="modal" 
+                    	<button type="button"  class="btn btn-default btn-sm" data-toggle="modal" 
                         data-target="#personHistory" th:onclick="'personHistory(' + ${person.getId()} + ')'">
           					<span class="glyphicon glyphicon-floppy-disk"></span>Ajalugu 
        					 </button>
@@ -99,7 +103,7 @@
             </table>
         </div>
     </div>
-      <div class="row" align="center">
+      <div sec:authorize="hasRole('ROLE_ADMIN')" class="row" align="center">
          <div class="col-xs-3 col-sm-3 col-md-3" align="center">
              <input  type="submit" class="btn btn-lg btn-primary btn-block" value="Lisa kasutaja" data-toggle="modal" data-target="#nameModal"/>
          </div>
@@ -130,15 +134,17 @@
                     <td th:id="'housework'+${housework.getId()}" th:text="${housework.getPoints()}">points</td>
                     
                     <td>
-					 	<button type="submit"  class="buttonBlue" data-toggle="modal" 
+					 	<button sec:authorize="hasRole('ROLE_ADMIN')" type="submit"  class="buttonBlue" data-toggle="modal" 
                         			data-target="#changeHousework" th:onclick="'changeHouseworkPre(' + ${housework.getId()} + ')'"><span class="glyphicon glyphicon-pencil"></span>Muuda kodutööd
                          </button>
+                         <p sec:authorize="hasRole('ROLE_USER')">Sa ei saa kodutööd muuta!</p>
                     </td>
                     <td>
-                    	<button type="button" class="btn btn-default btn-sm" data-toggle="modal" 
+                    	<button sec:authorize="hasRole('ROLE_ADMIN')" type="button" class="btn btn-default btn-sm" data-toggle="modal" 
                         	data-target="#houseworkDelete" th:onclick="'deleteHousework(' + ${housework.getId()} + ')'">
           					<span class="glyphicon glyphicon-trash"></span> Kustuta 
        					 </button>
+       					 <p sec:authorize="hasRole('ROLE_USER')">Sa ei saa kodutööd kustutada!</p>
                     </td>
                 </tr>
 
@@ -146,7 +152,7 @@
             </table>
         </div>
     </div>
-    <div class="row" align="center">
+    <div sec:authorize="hasRole('ROLE_ADMIN')" class="row" align="center">
          <div class="col-xs-3 col-sm-3 col-md-3" align="center">
              <input  type="submit" class="btn btn-lg btn-primary btn-block" value="Lisa kodutöid" data-toggle="modal" data-target="#houseworkmodal" />
          </div>

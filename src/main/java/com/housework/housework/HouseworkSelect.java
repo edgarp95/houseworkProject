@@ -8,14 +8,13 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
-
 public class HouseworkSelect {
-	
+
 	@NotEmpty
 	@NotNull
 	private List<Integer> select;
-	
-	//user id
+
+	// user id
 	@NotNull
 	private int id;
 
@@ -45,10 +44,5 @@ public class HouseworkSelect {
 	public void setId(int id) {
 		this.id = id;
 	}
-	
-	
-	
-	
-	
 
 }

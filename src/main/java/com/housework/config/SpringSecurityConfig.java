@@ -12,47 +12,26 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
+
 @Configuration
-//http://docs.spring.io/spring-boot/docs/current/reference/html/howto-security.html
-//Switch off the Spring Boot security configuration
-//@EnableWebSecurity
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
- @Autowired
- private AccessDeniedHandler accessDeniedHandler;
 
- // roles admin allow to access /admin/**
- // roles user allow to access /user/**
- // custom 403 access denied handler
- @Override
- protected void configure(HttpSecurity http) throws Exception {
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
 
-     http.csrf().disable()
-             .authorizeRequests()
-             .antMatchers("/resources/**", "/webjars/**", "/static/**", "/css/**", "/js/**").permitAll()
-             .antMatchers("/admin/**").hasAnyRole("ADMIN")
-             .antMatchers("/user/**").hasAnyRole("USER")
-             .anyRequest().authenticated()
-             .and()
-             .formLogin()
-             .loginPage("/login")
-             .permitAll()
-             .and()
-             .logout()
-             .permitAll()
-             .and()
-             .exceptionHandling().accessDeniedHandler(accessDeniedHandler);
- }
+		http.csrf().disable().authorizeRequests()
+				.antMatchers("/resources/**", "/webjars/**", "/static/**", "/css/**", "/js/**", "/images/**").permitAll()
+				.antMatchers("/admin/**").hasAnyRole("ADMIN").antMatchers("/user/**").hasAnyRole("USER").anyRequest()
+				.authenticated().and().formLogin().loginPage("/login").permitAll().and().logout().permitAll();
 
+	}
 
- @Autowired
- public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+	@Autowired
+	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
-     auth.inMemoryAuthentication()
-             .withUser("user").password("password").roles("USER")
-             .and()
-             .withUser("admin").password("password").roles("ADMIN");
- }
+		auth.inMemoryAuthentication().withUser("user").password("password").roles("USER").and().withUser("admin")
+				.password("password").roles("ADMIN").and().withUser("artur").password("artur").roles("USER");
+	}
 
- 
 }
